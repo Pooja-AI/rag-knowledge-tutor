@@ -1,18 +1,13 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import RECIPES from "./pages/RAGCookbook"
-
+import { HashRouter, Routes, Route } from "react-router-dom";
+import RECIPES from "./pages/RAGCookbook";
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
-      
-        {/* Retrieval-Augmented Generation */}
         <Route path="/" element={<RECIPES />} />
-        {/* <Route path="/rag-cookbook" element={<RECIPES />} /> */}
-        
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
