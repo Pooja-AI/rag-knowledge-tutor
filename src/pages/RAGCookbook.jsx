@@ -1,7 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import Ragfoundation from "../assets/docs/rag-foundations.md?raw";
+import MultiQueryRetrieval from "../assets/docs/multi-query-retrieval.md?raw";
+import MultiQuery from "../assets/code/multiquery.py?raw";
+import MetadataFiltering from "../assets/code/metadatafilter.py?raw";
+import MetadataFilteringDoc from "../assets/docs/metadata-filtering.md?raw";
+import SparseRetrieval from "../assets/docs/Sparse_Retrieval.md?raw";
+import SparseRetrievalCode from "../assets/code/sparseretrieval.py?raw";
+
 
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 
 const RECIPES = [
@@ -18,6 +26,8 @@ const RECIPES = [
 
   tags: ["query", "pipeline", "nlp"],
 
+  
+  concept: Ragfoundation,
   steps: [
     { label: "Input Query", icon: "⌨️", detail: "Raw user query is received." },
     { label: "Normalization", icon: "🧹", detail: "Clean and standardize text." },
@@ -35,6 +45,7 @@ def process_query(query):
     return route(query, intent)
 `
 },
+
 {
   id: "multi-query-retrieval",
   category: "Query",
@@ -47,6 +58,7 @@ def process_query(query):
 
   tags: ["query", "retrieval", "expansion", "rag"],
 
+  concept: MultiQueryRetrieval,
   steps: [
     {
       label: "Input Query",
@@ -75,16 +87,7 @@ def process_query(query):
     }
   ],
 
-  code: `
-def multi_query_retrieval(query):
-    queries = expand_query(query)
-
-    results = []
-    for q in queries:
-        results.extend(retrieve(q))
-
-    return list(set(results))
-`
+  code: MultiQuery
 },
 {
   id: "self-query-retrieval",
@@ -299,6 +302,7 @@ def cot_retrieval(query):
     "Generates additional follow-up queries based on missing information in conversation to improve completeness of retrieval.",
 
   tags: ["query", "conversation", "retrieval", "llm"],
+  
 
   steps: [
     {
@@ -1879,7 +1883,7 @@ const answer = await llm.invoke(
     "enterprise-rag",
     "retrieval"
   ],
-
+  concept: MetadataFilteringDoc,
   steps: [
     {
       label: "Attach Metadata",
@@ -1907,17 +1911,96 @@ const answer = await llm.invoke(
     }
   ],
 
-  code: `const results = await index.query({
-  vector: embedding,
-  topK: 10,
-  filter: {
-    department: "finance",
-    year: { "$gte": 2024 }
-  },
-  includeMetadata: true,
-});`
+  code: MetadataFiltering
 },
+{
+  id: "sparse-retrieval",
+  category: "Retrieval",
+  title: "Sparse Retrieval (BM25)",
+  difficulty: "Beginner",
+  time: "~20 min",
 
+  description:
+    "Retrieves documents using keyword matching and statistical term weighting such as BM25 or TF-IDF.",
+
+  tags: ["bm25", "tfidf", "keyword", "retrieval"],
+
+  concept: SparseRetrieval,
+
+  steps: [
+    {
+      label: "Input Query",
+      icon: "⌨️",
+      detail: "User submits a text query."
+    },
+    {
+      label: "Tokenization",
+      icon: "✂️",
+      detail: "Split query into searchable keywords."
+    },
+    {
+      label: "Keyword Search",
+      icon: "🔍",
+      detail: "Search inverted index using BM25 or TF-IDF."
+    },
+    {
+      label: "Ranking",
+      icon: "📊",
+      detail: "Score documents based on keyword relevance."
+    },
+    {
+      label: "Return Results",
+      icon: "📄",
+      detail: "Return the highest-ranked documents."
+    }
+  ],
+
+  code: SparseRetrievalCode
+},
+{
+  id: "dense-retrieval",
+  category: "Retrieval",
+  title: "Dense Retrieval",
+  difficulty: "Intermediate",
+  time: "~25 min",
+
+  description:
+    "Uses vector embeddings to retrieve semantically similar documents.",
+
+  tags: ["embeddings", "vector", "semantic", "retrieval"],
+
+  concept: DenseRetrieval,
+
+  steps: [
+    {
+      label: "Input Query",
+      icon: "⌨️",
+      detail: "Receive user query."
+    },
+    {
+      label: "Embedding Generation",
+      icon: "🧠",
+      detail: "Convert query into a dense vector."
+    },
+    {
+      label: "Vector Search",
+      icon: "📍",
+      detail: "Search nearest document vectors."
+    },
+    {
+      label: "Similarity Ranking",
+      icon: "📊",
+      detail: "Rank by cosine similarity or dot product."
+    },
+    {
+      label: "Return Documents",
+      icon: "📄",
+      detail: "Provide the most similar documents."
+    }
+  ],
+
+  code: DenseRetrieval
+},
 {
   id: "multi-query-retrieval",
   category: "Retrieval",
@@ -2869,16 +2952,16 @@ function StepFlow({ steps }) {
   );
 }
 
+
 function ContentViewer({ content }) {
   return (
-    <div className="prose max-w-none">
-      <ReactMarkdown>
+    <div className="prose max-w-none h-[75vh] overflow-y-auto p-6">
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>
         {content}
       </ReactMarkdown>
     </div>
   );
 }
-
 
 function CodeBlock({ code }) {
   const [copied, setCopied] = useState(false);
@@ -2978,7 +3061,7 @@ function RecipeDetail({ recipe }) {
       </p>
 
       <div style={{ display: "flex", gap: 4, marginBottom: 18, borderBottom: "0.5px solid var(--color-border-tertiary)", paddingBottom: 0 }}>
-        {["steps", "code"].map((t) => (
+        {["steps", "code", "concept"].map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -2990,13 +3073,14 @@ function RecipeDetail({ recipe }) {
               marginBottom: -1, transition: "all 0.12s",
             }}
           >
-            {t === "steps" ? "Pipeline Steps" : "Code"}
+            {t === "steps" ? "Pipeline Steps" : t === "code" ? "Code" : "Concept"}
           </button>
         ))}
       </div>
-
+      
       {tab === "steps" && <StepFlow steps={recipe.steps} />}
       {tab === "code" && <CodeBlock code={recipe.code} />}
+      {tab === "concept" && <ContentViewer content={recipe.concept} />}
     </div>
   );
 }
