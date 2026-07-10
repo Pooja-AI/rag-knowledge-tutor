@@ -1969,7 +1969,7 @@ const answer = await llm.invoke(
 
   tags: ["embeddings", "vector", "semantic", "retrieval"],
 
-  concept: DenseRetrieval,
+  concept: "",
 
   steps: [
     {
@@ -1999,7 +1999,7 @@ const answer = await llm.invoke(
     }
   ],
 
-  code: DenseRetrieval
+  code: ""
 },
 {
   id: "multi-query-retrieval",
