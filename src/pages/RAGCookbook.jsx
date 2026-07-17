@@ -6,6 +6,10 @@ import MetadataFiltering from "../assets/code/metadatafilter.py?raw";
 import MetadataFilteringDoc from "../assets/docs/metadata-filtering.md?raw";
 import SparseRetrieval from "../assets/docs/Sparse_Retrieval.md?raw";
 import SparseRetrievalCode from "../assets/code/sparseretrieval.py?raw";
+import DenseRetrieval from "../assets/docs/dense_retrieval.md?raw";
+import DenseRetrievalCode from "../assets/code/denseretrieval.py?raw";
+import HybridSearchCode from "../assets/code/HybridSearch.py?raw";
+import HybridSearchDoc from "../assets/docs/hybrid_search.md?raw";
 
 
 import ReactMarkdown from "react-markdown";
@@ -1758,6 +1762,7 @@ async function retrieve(query) {
     time: "~30 min",
     description: "Combine dense semantic vectors with sparse BM25 keyword search, then re-rank. Handles both conceptual and exact-match queries.",
     tags: ["BM25", "reranking", "fusion"],
+    concept: HybridSearchDoc,
     steps: [
       { label: "Dense Embed", icon: "🔢", detail: "Embed all chunks with a dense model for semantic search." },
       { label: "Build BM25 Index", icon: "🔑", detail: "Build a sparse BM25 index over the same corpus for keyword matching." },
@@ -1766,48 +1771,7 @@ async function retrieve(query) {
       { label: "Cross-Encoder Rerank", icon: "🏆", detail: "Pass top-20 fused results through a cross-encoder to get a final top-5." },
       { label: "Generate", icon: "✨", detail: "Use reranked top-5 as context for the LLM." },
     ],
-    code: `import { BM25 } from "bm25-ts";
-import { CrossEncoder } from "cross-encoders";
-
-// Reciprocal Rank Fusion
-function rrf(denseRanks, sparseRanks, k = 60) {
-  const scores = new Map();
-  const merge = (ranks) => {
-    ranks.forEach((id, i) => {
-      scores.set(id, (scores.get(id) || 0) + 1 / (k + i + 1));
-    });
-  };
-  merge(denseRanks);
-  merge(sparseRanks);
-  return [...scores.entries()].sort((a, b) => b[1] - a[1]);
-}
-
-async function hybridQuery(question, corpus, vectorIndex) {
-  // Dense retrieval
-  const qEmbed = await embed(question);
-  const denseHits = await vectorIndex.query({ vector: qEmbed, topK: 20 });
-
-  // Sparse BM25 retrieval
-  const bm25 = new BM25(corpus.map((c) => c.text));
-  const sparseHits = bm25.search(question, 20);
-
-  // Fuse
-  const fused = rrf(
-    denseHits.matches.map((m) => m.id),
-    sparseHits.map((h) => h.id)
-  ).slice(0, 20);
-
-  // Rerank
-  const reranker = new CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2");
-  const pairs = fused.map(([id]) => [question, corpus.find((c) => c.id === id).text]);
-  const rerankScores = await reranker.predict(pairs);
-  const top5 = fused
-    .map(([id], i) => ({ id, score: rerankScores[i] }))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 5);
-
-  return generateAnswer(question, top5);
-}`,
+    code: HybridSearchCode
   },
   {
   id: "semantic-search",
@@ -1969,7 +1933,7 @@ const answer = await llm.invoke(
 
   tags: ["embeddings", "vector", "semantic", "retrieval"],
 
-  concept: "",
+  concept: DenseRetrieval,
 
   steps: [
     {
@@ -1999,7 +1963,7 @@ const answer = await llm.invoke(
     }
   ],
 
-  code: ""
+  code: DenseRetrievalCode
 },
 {
   id: "multi-query-retrieval",
