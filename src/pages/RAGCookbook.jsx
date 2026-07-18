@@ -16,6 +16,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 
+
 const RECIPES = [
 
   {
@@ -3145,7 +3146,7 @@ export default function App() {
     <div style={{
       display: "flex", flexDirection: "column",
       height: "100vh", fontFamily: "var(--font-sans, system-ui, sans-serif)",
-      background: "var(--color-background-tertiary, #0e1643)",
+      background: "var(--color-background-tertiary, radial-gradient(circle at top, #0f172a, #020617);)",
       color: "var(--color-text-primary)",
     }}>
       <Header />
