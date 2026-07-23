@@ -10,6 +10,36 @@ import DenseRetrieval from "../assets/docs/dense_retrieval.md?raw";
 import DenseRetrievalCode from "../assets/code/denseretrieval.py?raw";
 import HybridSearchCode from "../assets/code/HybridSearch.py?raw";
 import HybridSearchDoc from "../assets/docs/hybrid_search.md?raw";
+import SemanticSearchDoc from "../assets/docs/semantic_search.md?raw";
+import SemanticSearchCode from "../assets/code/semanticsearch.py?raw";
+import ParentChildRetrievalDoc from "../assets/docs/ParentChildRetrieval.md?raw";
+import ParentChildRetrievalCode from "../assets/code/ParentChildRetrieval.py?raw";
+import WhyChunkingDoc from "../assets/docs/why_chunking.md?raw";
+import FixedSizeChunkingDoc from "../assets/docs/fixed_size_chunking.md?raw";
+import FixedSizeChunkingCode from "../assets/code/fixed_size_chunking.py?raw";
+import RecursiveChunkingDoc from "../assets/docs/recursive_chunking.md?raw";
+import RecursiveChunkingCode from "../assets/code/recursive_chunking.py?raw";
+import SemanticChunkingDoc from "../assets/docs/semantic_chunking.md?raw";
+import SemanticChunkingCode from "../assets/code/semantic_chunking.py?raw";
+import TokenBasedChunkingDoc from "../assets/docs/token_based_chunking.md?raw";
+import TokenBasedChunkingCode from "../assets/code/token_based_chunking.py?raw";
+import SentenceChunkingDoc from "../assets/docs/sentence_chunking.md?raw";
+import SentenceChunkingCode from "../assets/code/sentence_chunking.py?raw";
+import ParagraphChunkingDoc from "../assets/docs/paragraph_chunking.md?raw";
+import ParagraphChunkingCode from "../assets/code/paragraph_chunking.py?raw";
+import ParentChildChunkingDoc from "../assets/docs/parent_child_chunking.md?raw";
+import ParentChildChunkingCode from "../assets/code/parent_child_chunking.py?raw";
+import SlidingWindowChunkingDoc from "../assets/docs/sliding_window_chunking.md?raw";
+import SlidingWindowChunkingCode from "../assets/code/sliding_window_chunking.py?raw";
+import AgenticChunkingDoc from "../assets/docs/agentic_chunking.md?raw";
+import AgenticChunkingCode from "../assets/code/agentic_chunking.py?raw";
+import ChunkSizeParameterDoc from "../assets/docs/chunk_size_parameter.md?raw";
+import ChunkSizeParameterCode from "../assets/code/chunk_parameters.py?raw";
+import ChunkOverLapParameter from "../assets/docs/chunk_overlap_parameter.md?raw";
+import ContextWindowParameter from "../assets/docs/context_window_parameter.md?raw";
+
+
+
 
 
 import ReactMarkdown from "react-markdown";
@@ -19,41 +49,683 @@ import remarkGfm from "remark-gfm";
 
 const RECIPES = [
 
-  {
-  id: "query-basic",
-  category: "Query",
-  title: "Query Processing Pipeline",
+
+// 1. WHY CHUNKING?
+{
+  id: "why-chunking",
+  category: "Chunking",
+  title: "Why Chunking?",
   difficulty: "Beginner",
-  time: "~20 min",
+  time: "~5 min",
 
   description:
-    "Core pipeline that transforms raw user queries into retrieval-ready structured queries.",
+    "Understand the importance and benefits of document chunking in RAG systems. Learn why splitting documents optimizes retrieval, reduces costs, and improves performance.",
 
-  tags: ["query", "pipeline", "nlp"],
+  tags: ["chunking", "rag", "fundamentals"],
 
+  concept: WhyChunkingDoc,
   
-  concept: Ragfoundation,
   steps: [
-    { label: "Input Query", icon: "⌨️", detail: "Raw user query is received." },
-    { label: "Normalization", icon: "🧹", detail: "Clean and standardize text." },
-    { label: "Intent Detection", icon: "🧠", detail: "Understand user intent." },
-    { label: "Transformation", icon: "🔄", detail: "Convert into structured form." },
-    { label: "Routing", icon: "🚦", detail: "Send to correct retriever." },
-    { label: "Output Query", icon: "📤", detail: "Final optimized query." }
+    {
+      label: "Context Window Limits",
+      icon: "📊",
+      detail: "LLMs have finite context windows; large documents need splitting."
+    },
+    {
+      label: "Retrieval Relevance",
+      icon: "🎯",
+      detail: "Smaller chunks improve search relevance and ranking accuracy."
+    },
+    {
+      label: "Cost Optimization",
+      icon: "💰",
+      detail: "Reduce token usage by retrieving only relevant chunks."
+    },
+    {
+      label: "Processing Speed",
+      icon: "⚡",
+      detail: "Faster embeddings and retrieval with smaller text units."
+    },
+    {
+      label: "Semantic Coherence",
+      icon: "🧠",
+      detail: "Maintain meaning and context within each chunk boundary."
+    }
   ],
 
-  code: `
-def process_query(query):
-    query = normalize(query)
-    intent = detect_intent(query)
-    query = transform(query, intent)
-    return route(query, intent)
-`
+  code: ""
+},
+
+// 2. FIXED-SIZE CHUNKING
+{
+  id: "fixed-size-chunking",
+  category: "Chunking",
+  title: "Fixed-size Chunking",
+  difficulty: "Beginner",
+  time: "~10 min",
+
+  description:
+    "Split documents into uniform chunks of N tokens or characters. Simple and predictable, but may break mid-sentence and lose contextual information.",
+
+  tags: ["chunking", "fixed-size", "basic", "rag"],
+
+  concept: FixedSizeChunkingDoc,
+  
+  steps: [
+    {
+      label: "Input Text",
+      icon: "📝",
+      detail: "Load document or text content."
+    },
+    {
+      label: "Define Chunk Size",
+      icon: "📏",
+      detail: "Set chunk size in tokens or characters (e.g., 512 tokens)."
+    },
+    {
+      label: "Split Sequentially",
+      icon: "✂️",
+      detail: "Divide text into equal-sized segments."
+    },
+    {
+      label: "Handle Boundaries",
+      icon: "🔗",
+      detail: "Manage chunk boundaries (may split mid-word/sentence)."
+    },
+    {
+      label: "Add Metadata",
+      icon: "🏷️",
+      detail: "Tag chunks with source, position, and index."
+    }
+  ],
+
+  code: FixedSizeChunkingCode
+},
+
+// 3. RECURSIVE CHUNKING
+{
+  id: "recursive-chunking",
+  category: "Chunking",
+  title: "Recursive Chunking",
+  difficulty: "Intermediate",
+  time: "~15 min",
+
+  description:
+    "Recursively splits documents by natural delimiters (paragraphs, sentences, words). Preserves semantic boundaries while respecting size constraints.",
+
+  tags: ["chunking", "recursive", "delimiters", "rag"],
+
+  concept: RecursiveChunkingDoc,
+  
+  steps: [
+    {
+      label: "Input Document",
+      icon: "📄",
+      detail: "Load document to be split."
+    },
+    {
+      label: "Define Separators",
+      icon: "📋",
+      detail: "Specify hierarchical delimiters (paragraphs, sentences, words)."
+    },
+    {
+      label: "First-Level Split",
+      icon: "✂️",
+      detail: "Split by largest delimiter (e.g., double newlines)."
+    },
+    {
+      label: "Merge if Needed",
+      icon: "🔗",
+      detail: "Combine small chunks to meet size requirements."
+    },
+    {
+      label: "Recursive Refinement",
+      icon: "🔄",
+      detail: "For oversized chunks, split by next smaller delimiter."
+    },
+    {
+      label: "Finalize Chunks",
+      icon: "✅",
+      detail: "Output chunks within size constraints."
+    }
+  ],
+
+  code: RecursiveChunkingCode
+},
+
+// 4. SEMANTIC CHUNKING
+{
+  id: "semantic-chunking",
+  category: "Chunking",
+  title: "Semantic Chunking",
+  difficulty: "Advanced",
+  time: "~25 min",
+
+  description:
+    "Groups text by semantic similarity using embeddings. Dynamically determines chunk boundaries based on content meaning rather than fixed delimiters.",
+
+  tags: ["chunking", "semantic", "embeddings", "rag", "advanced"],
+
+  concept: SemanticChunkingDoc,
+  
+  steps: [
+    {
+      label: "Load Document",
+      icon: "📥",
+      detail: "Prepare text to be chunked."
+    },
+    {
+      label: "Split into Sentences",
+      icon: "📝",
+      detail: "Break document into individual sentences."
+    },
+    {
+      label: "Generate Embeddings",
+      icon: "🧠",
+      detail: "Embed each sentence using embedding model."
+    },
+    {
+      label: "Calculate Similarity",
+      icon: "📊",
+      detail: "Compute cosine similarity between consecutive sentences."
+    },
+    {
+      label: "Identify Breakpoints",
+      icon: "🔍",
+      detail: "Detect low-similarity boundaries as chunk breaks."
+    },
+    {
+      label: "Create Chunks",
+      icon: "✂️",
+      detail: "Group semantically similar sentences together."
+    },
+    {
+      label: "Validate Chunks",
+      icon: "✅",
+      detail: "Ensure chunks meet size and coherence requirements."
+    }
+  ],
+
+  code: SemanticChunkingCode
+},
+
+// 5. TOKEN-BASED CHUNKING
+{
+  id: "token-based-chunking",
+  category: "Chunking",
+  title: "Token-based Chunking",
+  difficulty: "Intermediate",
+  time: "~15 min",
+
+  description:
+    "Splits documents by exact token count using a model tokenizer. Provides precise control over chunk sizes relative to specific LLM context windows.",
+
+  tags: ["chunking", "tokens", "llm-aware", "rag"],
+
+  concept: TokenBasedChunkingDoc,
+  
+  steps: [
+    {
+      label: "Select Tokenizer",
+      icon: "🔧",
+      detail: "Choose tokenizer matching target LLM (GPT, Claude, etc)."
+    },
+    {
+      label: "Load Document",
+      icon: "📄",
+      detail: "Prepare text content for tokenization."
+    },
+    {
+      label: "Tokenize Full Text",
+      icon: "🔢",
+      detail: "Convert entire document to token sequence."
+    },
+    {
+      label: "Split by Token Count",
+      icon: "✂️",
+      detail: "Divide tokens into fixed-size chunks (e.g., 512 tokens)."
+    },
+    {
+      label: "Decode Chunks",
+      icon: "📝",
+      detail: "Convert token sequences back to text."
+    },
+    {
+      label: "Handle Boundaries",
+      icon: "🔗",
+      detail: "Clean up incomplete words at chunk edges."
+    },
+    {
+      label: "Add Overlap",
+      icon: "📌",
+      detail: "Optionally add token-level overlap between chunks."
+    }
+  ],
+
+  code: TokenBasedChunkingCode
+},
+
+// 6. SENTENCE CHUNKING
+{
+  id: "sentence-chunking",
+  category: "Chunking",
+  title: "Sentence Chunking",
+  difficulty: "Beginner",
+  time: "~10 min",
+
+  description:
+    "Breaks documents at sentence boundaries. Each chunk is one or more complete sentences, maintaining natural language flow and readability.",
+
+  tags: ["chunking", "sentence", "nlp", "rag"],
+
+  concept: SentenceChunkingDoc,
+  
+  steps: [
+    {
+      label: "Input Text",
+      icon: "📝",
+      detail: "Load document content."
+    },
+    {
+      label: "Detect Sentences",
+      icon: "🔍",
+      detail: "Identify sentence boundaries using NLP library."
+    },
+    {
+      label: "Group Sentences",
+      icon: "📦",
+      detail: "Combine consecutive sentences until size threshold."
+    },
+    {
+      label: "Handle Edge Cases",
+      icon: "⚙️",
+      detail: "Manage abbreviations, decimals, and special punctuation."
+    },
+    {
+      label: "Validate Chunks",
+      icon: "✅",
+      detail: "Ensure each chunk contains complete sentences."
+    }
+  ],
+
+  code: SentenceChunkingCode
+},
+
+// 7. PARAGRAPH CHUNKING
+{
+  id: "paragraph-chunking",
+  category: "Chunking",
+  title: "Paragraph Chunking",
+  difficulty: "Beginner",
+  time: "~8 min",
+
+  description:
+    "Groups complete paragraphs as chunks. Preserves document structure and semantic units, though chunks may vary significantly in size.",
+
+  tags: ["chunking", "paragraph", "structure", "rag"],
+
+  concept: ParagraphChunkingDoc,
+  
+  steps: [
+    {
+      label: "Input Document",
+      icon: "📄",
+      detail: "Load formatted document with clear paragraphs."
+    },
+    {
+      label: "Identify Paragraphs",
+      icon: "🔍",
+      detail: "Detect paragraph boundaries (blank lines, indentation)."
+    },
+    {
+      label: "Combine Paragraphs",
+      icon: "🔗",
+      detail: "Group small paragraphs to meet size requirements."
+    },
+    {
+      label: "Split Oversized Chunks",
+      icon: "✂️",
+      detail: "For large paragraphs, split at sentence level."
+    },
+    {
+      label: "Preserve Structure",
+      icon: "🏗️",
+      detail: "Maintain original formatting and hierarchy."
+    }
+  ],
+
+  code: ParagraphChunkingCode
+},
+
+// 8. SLIDING WINDOW CHUNKING
+{
+  id: "sliding-window-chunking",
+  category: "Chunking",
+  title: "Sliding Window Chunking",
+  difficult: "Intermediate",
+  time: "~15 min",
+
+  description:
+    "Creates overlapping chunks using a sliding window approach. Maintains context across chunk boundaries and prevents information loss at split points.",
+
+  tags: ["chunking", "sliding-window", "overlap", "rag"],
+
+  concept: SlidingWindowChunkingDoc,
+  
+  steps: [
+    {
+      label: "Tokenize Document",
+      icon: "🔢",
+      detail: "Convert text to tokens or units."
+    },
+    {
+      label: "Define Window Size",
+      icon: "📏",
+      detail: "Set chunk size (e.g., 512 tokens)."
+    },
+    {
+      label: "Define Stride",
+      icon: "🔄",
+      detail: "Set step size for window movement (usually < chunk size)."
+    },
+    {
+      label: "Create First Chunk",
+      icon: "✂️",
+      detail: "Extract first window of tokens."
+    },
+    {
+      label: "Slide Window",
+      icon: "➡️",
+      detail: "Move window by stride amount and create next chunk."
+    },
+    {
+      label: "Handle End",
+      icon: "🔚",
+      detail: "Manage final partial chunks."
+    },
+    {
+      label: "Add Metadata",
+      icon: "🏷️",
+      detail: "Tag each chunk with position and context."
+    }
+  ],
+
+  code: SlidingWindowChunkingCode
+},
+
+// 9. PARENT-CHILD CHUNKING
+{
+  id: "parent-child-chunking",
+  category: "Chunking",
+  title: "Parent-Child Chunking",
+  difficulty: "Advanced",
+  time: "~25 min",
+
+  description:
+    "Creates hierarchical chunks with parent summaries and child detail chunks. Enables flexible retrieval at different granularity levels.",
+
+  tags: ["chunking", "hierarchical", "parent-child", "rag", "advanced"],
+
+  concept: ParentChildChunkingDoc,
+  
+  steps: [
+    {
+      label: "Input Document",
+      icon: "📄",
+      detail: "Load document for hierarchical chunking."
+    },
+    {
+      label: "Create Child Chunks",
+      icon: "👶",
+      detail: "Split into detailed chunks using base strategy."
+    },
+    {
+      label: "Group into Parents",
+      icon: "👨",
+      detail: "Combine child chunks into larger parent units."
+    },
+    {
+      label: "Generate Parent Summaries",
+      icon: "✍️",
+      detail: "Create concise summaries of parent content."
+    },
+    {
+      label: "Create Hierarchy",
+      icon: "🌳",
+      detail: "Establish parent-child relationships and links."
+    },
+    {
+      label: "Index Both Levels",
+      icon: "🗂️",
+      detail: "Store both parent and child chunks with references."
+    },
+    {
+      label: "Implement Retrieval",
+      icon: "🔍",
+      detail: "Enable retrieval at child or parent level based on query."
+    }
+  ],
+
+  code: ParentChildChunkingCode
+},
+
+// 10. AGENTIC CHUNKING
+{
+  id: "agentic-chunking",
+  category: "Chunking",
+  title: "Agentic Chunking",
+  difficulty: "Advanced",
+  time: "~30 min",
+
+  description:
+    "Uses an LLM agent to intelligently determine chunk boundaries based on content meaning. Provides context-aware, adaptive chunking for complex documents.",
+
+  tags: ["chunking", "agentic", "llm-driven", "ai", "advanced"],
+
+  concept: AgenticChunkingDoc,
+  
+  steps: [
+    {
+      label: "Load Document",
+      icon: "📄",
+      detail: "Prepare document for agentic analysis."
+    },
+    {
+      label: "Define Instructions",
+      icon: "📝",
+      detail: "Create prompts guiding chunk boundary decisions."
+    },
+    {
+      label: "Send to LLM Agent",
+      icon: "🤖",
+      detail: "Query LLM to identify logical chunk boundaries."
+    },
+    {
+      label: "LLM Analyzes Content",
+      icon: "🧠",
+      detail: "Agent reads and understands semantic structure."
+    },
+    {
+      label: "Identify Breakpoints",
+      icon: "🎯",
+      detail: "Agent proposes where chunks should logically end."
+    },
+    {
+      label: "Extract Chunks",
+      icon: "✂️",
+      detail: "Split document at agent-identified boundaries."
+    },
+    {
+      label: "Generate Summaries",
+      icon: "📋",
+      detail: "Create titles/summaries for each chunk."
+    },
+    {
+      label: "Validate & Store",
+      icon: "✅",
+      detail: "Validate chunks and store with metadata."
+    }
+  ],
+
+  code: AgenticChunkingCode
+},
+
+// 11. CHUNK SIZE
+{
+  id: "chunk-size",
+  category: "Chunking",
+  title: "Chunk Size",
+  difficulty: "Beginner",
+  time: "~10 min",
+
+  description:
+    "Understand chunk size - the fundamental parameter controlling how much text each chunk contains. Learn optimal sizes for different scenarios and models.",
+
+  tags: ["chunking", "parameters", "optimization", "rag"],
+
+  concept: ChunkSizeParameterDoc,
+  
+  steps: [
+    {
+      label: "Define Requirements",
+      icon: "📋",
+      detail: "Determine context window and quality needs."
+    },
+    {
+      label: "Model Context Limit",
+      icon: "🎯",
+      detail: "Check target LLM's context window size."
+    },
+    {
+      label: "Calculate Safety Margin",
+      icon: "🛡️",
+      detail: "Reserve tokens for prompt, response, overhead."
+    },
+    {
+      label: "Determine Retrieval Budget",
+      icon: "💰",
+      detail: "Estimate tokens for retrieved chunks in prompt."
+    },
+    {
+      label: "Set Chunk Size",
+      icon: "📏",
+      detail: "Configure chunk size (typically 256-2048 tokens)."
+    },
+    {
+      label: "Test & Adjust",
+      icon: "🔧",
+      detail: "Evaluate retrieval quality and performance."
+    }
+  ],
+
+  code: ChunkSizeParameterCode
+},
+
+// 12. CHUNK OVERLAP
+{
+  id: "chunk-overlap",
+  category: "Chunking",
+  title: "Chunk Overlap",
+  difficulty: "Intermediate",
+  time: "~12 min",
+
+  description:
+    "Understand chunk overlap - duplicating tokens between adjacent chunks to preserve context across boundaries and prevent information loss.",
+
+  tags: ["chunking", "overlap", "parameters", "rag"],
+
+  concept: ChunkOverLapParameter,
+  
+  steps: [
+    {
+      label: "Analyze Break Risk",
+      icon: "⚠️",
+      detail: "Identify risk of context loss at chunk boundaries."
+    },
+    {
+      label: "Define Overlap Ratio",
+      icon: "📊",
+      detail: "Decide overlap percentage (typically 10-20%)."
+    },
+    {
+      label: "Calculate Overlap Size",
+      icon: "🔢",
+      detail: "Convert percentage to token/character count."
+    },
+    {
+      label: "Implement Overlapping",
+      icon: "🔗",
+      detail: "Configure chunking algorithm with overlap."
+    },
+    {
+      label: "Test Boundary Quality",
+      icon: "✅",
+      detail: "Validate that boundaries preserve context."
+    },
+    {
+      label: "Monitor Storage Impact",
+      icon: "💾",
+      detail: "Track increased storage from overlaps."
+    }
+  ],
+
+  code: ""
+},
+
+// 13. CONTEXT WINDOW
+{
+  id: "context-window",
+  category: "Chunking",
+  title: "Context Window",
+  difficulty: "Intermediate",
+  time: "~15 min",
+
+  description:
+    "Understand context window - the maximum tokens an LLM can process. Learn how it constrains chunk size and influences chunking strategy.",
+
+  tags: ["chunking", "context-window", "llm", "parameters"],
+
+  concept: ContextWindowParameter,
+  
+  steps: [
+    {
+      label: "Identify Target LLM",
+      icon: "🤖",
+      detail: "Choose which model(s) you're using."
+    },
+    {
+      label: "Check Context Size",
+      icon: "📊",
+      detail: "Look up model's total context window."
+    },
+    {
+      label: "Allocate for Prompt",
+      icon: "💬",
+      detail: "Reserve tokens for system prompt (~200-500)."
+    },
+    {
+      label: "Reserve for Response",
+      icon: "📝",
+      detail: "Allocate tokens for LLM response (~500-2000)."
+    },
+    {
+      label: "Calculate Retrieval Budget",
+      icon: "🔍",
+      detail: "Remaining tokens available for retrieved chunks."
+    },
+    {
+      label: "Size Chunks Accordingly",
+      icon: "📏",
+      detail: "Set chunk size based on retrieval budget."
+    }
+  ],
+
+  code: ""
 },
 
 {
   id: "multi-query-retrieval",
-  category: "Query",
+  category: "Retrieval",
   title: "Multi-Query Retrieval",
   difficulty: "Advanced",
   time: "~25 min",
@@ -95,1667 +767,6 @@ def process_query(query):
   code: MultiQuery
 },
 {
-  id: "self-query-retrieval",
-  category: "Query",
-  title: "Self-Query Retrieval",
-  difficulty: "Advanced",
-  time: "~30 min",
-
-  description:
-    "Automatically converts natural language queries into structured queries with metadata filters for precise retrieval.",
-
-  tags: ["query", "metadata", "retrieval", "llm"],
-
-  steps: [
-    {
-      label: "Input Query",
-      icon: "⌨️",
-      detail: "User provides a natural language query."
-    },
-    {
-      label: "Intent + Metadata Extraction",
-      icon: "🏷️",
-      detail: "Extract filters like date, category, or attributes."
-    },
-    {
-      label: "Structured Query Generation",
-      icon: "🧾",
-      detail: "Convert query into structured format."
-    },
-    {
-      label: "Filtered Retrieval",
-      icon: "🔍",
-      detail: "Retrieve documents using filters + embeddings."
-    }
-  ],
-
-  code: `
-def self_query_retrieval(query):
-    structured = llm_to_structured_query(query)
-
-    results = vector_db.search(
-        text=structured["text"],
-        filter=structured["metadata"]
-    )
-
-    return results
-`
-},
-{
-  id: "step-back-prompting",
-  category: "Query",
-  title: "Step-Back Prompting",
-  difficulty: "Advanced",
-  time: "~25 min",
-
-  description:
-    "Improves reasoning by converting a specific query into a more general abstraction before retrieval, then refining the answer back to the original context.",
-
-  tags: ["query", "reasoning", "abstraction", "retrieval"],
-
-  steps: [
-    {
-      label: "Input Query",
-      icon: "⌨️",
-      detail: "User provides a specific question."
-    },
-    {
-      label: "Step Back Transformation",
-      icon: "⬅️",
-      detail: "Convert query into a more general concept."
-    },
-    {
-      label: "General Retrieval",
-      icon: "📚",
-      detail: "Retrieve broad foundational knowledge."
-    },
-    {
-      label: "Context Mapping",
-      icon: "🔗",
-      detail: "Map general knowledge back to specific case."
-    },
-    {
-      label: "Final Answer",
-      icon: "✨",
-      detail: "Generate refined response."
-    }
-  ],
-
-  code: `
-def step_back_prompting(query):
-    general_query = llm.step_back(query)
-
-    docs = retrieve(general_query)
-
-    answer = llm.refine(query=query, context=docs)
-
-    return answer
-`
-},
-{
-  id: "sub-question-generation",
-  category: "Query",
-  title: "Sub-Question Generation",
-  difficulty: "Advanced",
-  time: "~30 min",
-
-  description:
-    "Breaks complex queries into smaller sub-questions, retrieves answers individually, and combines them into a final response.",
-
-  tags: ["query", "decomposition", "reasoning", "retrieval"],
-
-  steps: [
-    {
-      label: "Input Complex Query",
-      icon: "🧠",
-      detail: "User provides a multi-part or complex question."
-    },
-    {
-      label: "Decomposition",
-      icon: "✂️",
-      detail: "Split query into smaller sub-questions."
-    },
-    {
-      label: "Independent Retrieval",
-      icon: "🔍",
-      detail: "Retrieve information for each sub-question."
-    },
-    {
-      label: "Answer Aggregation",
-      icon: "🧩",
-      detail: "Combine all sub-answers into one response."
-    },
-    {
-      label: "Final Response",
-      icon: "✨",
-      detail: "Generate coherent final output."
-    }
-  ],
-
-  code: `
-def sub_question_generation(query):
-    sub_questions = decompose(query)
-
-    answers = []
-    for q in sub_questions:
-        answers.append(retrieve(q))
-
-    final_answer = aggregate(answers)
-
-    return final_answer
-`
-},
-{
-  id: "cot-retrieval",
-  category: "Query",
-  title: "Chain-of-Thought Retrieval",
-  difficulty: "Advanced",
-  time: "~30 min",
-
-  description:
-    "Uses step-by-step reasoning to guide retrieval at each intermediate stage, improving multi-step question answering accuracy.",
-
-  tags: ["query", "reasoning", "cot", "retrieval"],
-
-  steps: [
-    {
-      label: "Input Query",
-      icon: "⌨️",
-      detail: "User provides a complex reasoning question."
-    },
-    {
-      label: "Reasoning Breakdown",
-      icon: "🧠",
-      detail: "Decompose problem into logical steps."
-    },
-    {
-      label: "Step-wise Retrieval",
-      icon: "🔍",
-      detail: "Retrieve evidence for each reasoning step."
-    },
-    {
-      label: "Intermediate Synthesis",
-      icon: "🧩",
-      detail: "Combine step-level findings."
-    },
-    {
-      label: "Final Answer",
-      icon: "✨",
-      detail: "Produce final grounded response."
-    }
-  ],
-
-  code: `
-def cot_retrieval(query):
-    steps = llm.reason_steps(query)
-
-    docs = []
-    for step in steps:
-        docs.extend(retrieve(step))
-
-    return llm.generate_answer(query, docs)
-`
-},
-{
-  id: "follow-up-query-generation",
-  category: "Query",
-  title: "Follow-Up Query Generation",
-  difficulty: "Advanced",
-  time: "~25 min",
-
-  description:
-    "Generates additional follow-up queries based on missing information in conversation to improve completeness of retrieval.",
-
-  tags: ["query", "conversation", "retrieval", "llm"],
-  
-
-  steps: [
-    {
-      label: "Conversation Input",
-      icon: "💬",
-      detail: "User query with chat history context."
-    },
-    {
-      label: "Gap Detection",
-      icon: "🕳️",
-      detail: "Identify missing or unclear information."
-    },
-    {
-      label: "Follow-up Query Generation",
-      icon: "🔄",
-      detail: "Generate additional clarifying queries."
-    },
-    {
-      label: "Retrieval Execution",
-      icon: "🔍",
-      detail: "Run retrieval for generated queries."
-    },
-    {
-      label: "Answer Refinement",
-      icon: "✨",
-      detail: "Combine results into final response."
-    }
-  ],
-
-  code: `
-def follow_up_query_generation(query, history):
-    followups = llm.generate_followups(query, history)
-
-    results = []
-    for q in followups:
-        results.append(retrieve(q))
-
-    return llm.summarize(results)
-`
-},
-{
-  id: "conversational-query-reformulation",
-  category: "Query",
-  title: "Conversational Query Reformulation",
-  difficulty: "Advanced",
-  time: "~25 min",
-
-  description:
-    "Rewrites context-dependent conversational queries into standalone, retrieval-ready queries using chat history.",
-
-  tags: ["query", "conversation", "reformulation", "retrieval"],
-
-  steps: [
-    {
-      label: "Input Conversation",
-      icon: "💬",
-      detail: "User query with chat history."
-    },
-    {
-      label: "Context Understanding",
-      icon: "🧠",
-      detail: "Analyze previous conversation turns."
-    },
-    {
-      label: "Query Rewrite",
-      icon: "✍️",
-      detail: "Convert ambiguous query into standalone form."
-    },
-    {
-      label: "Retrieval Execution",
-      icon: "🔍",
-      detail: "Run search with reformulated query."
-    },
-    {
-      label: "Final Answer",
-      icon: "✨",
-      detail: "Generate response using retrieved context."
-    }
-  ],
-
-  code: `
-def reformulate_query(query, history):
-    standalone_query = llm.rewrite(query, history)
-
-    results = retrieve(standalone_query)
-
-    return results
-`
-},
-{
-  id: "context-aware-querying",
-  category: "Query",
-  title: "Context-Aware Querying",
-  difficulty: "Advanced",
-  time: "~30 min",
-
-  description:
-    "Enhances queries using user context such as role, domain, preferences, and prior interactions to improve retrieval relevance.",
-
-  tags: ["query", "context", "personalization", "retrieval"],
-
-  steps: [
-    {
-      label: "Input Query",
-      icon: "⌨️",
-      detail: "User provides a query."
-    },
-    {
-      label: "Context Collection",
-      icon: "👤",
-      detail: "Gather user profile, role, and history."
-    },
-    {
-      label: "Query Enrichment",
-      icon: "🔧",
-      detail: "Inject contextual signals into query."
-    },
-    {
-      label: "Contextual Retrieval",
-      icon: "🔍",
-      detail: "Retrieve results based on enriched query."
-    },
-    {
-      label: "Ranking & Filtering",
-      icon: "📊",
-      detail: "Prioritize results based on relevance to context."
-    }
-  ],
-
-  code: `
-def context_aware_querying(query, user_context):
-    enriched_query = inject_context(query, user_context)
-
-    results = retrieve(enriched_query)
-
-    ranked = rank_by_context(results, user_context)
-
-    return ranked
-`
-},
-{
-  id: "metadata-query-generation",
-  category: "Query",
-  title: "Metadata Query Generation",
-  difficulty: "Advanced",
-  time: "~30 min",
-
-  description:
-    "Transforms natural language queries into structured metadata filters combined with text search for precise retrieval.",
-
-  tags: ["query", "metadata", "filters", "retrieval"],
-
-  steps: [
-    {
-      label: "Input Query",
-      icon: "⌨️",
-      detail: "User provides a natural language query."
-    },
-    {
-      label: "Metadata Extraction",
-      icon: "🏷️",
-      detail: "Identify filters like date, category, author, or domain."
-    },
-    {
-      label: "Structured Query Build",
-      icon: "🧾",
-      detail: "Convert into hybrid text + metadata query."
-    },
-    {
-      label: "Filtered Retrieval",
-      icon: "🔍",
-      detail: "Retrieve documents using both filters and embeddings."
-    },
-    {
-      label: "Result Ranking",
-      icon: "📊",
-      detail: "Rank results based on relevance and constraints."
-    }
-  ],
-
-  code: `
-def metadata_query_generation(query):
-    metadata = extract_metadata(query)
-
-    results = db.search(
-        text=query,
-        filter=metadata
-    )
-
-    return results
-`
-},
-{
-  id: "agent-based-query-planning",
-  category: "Query",
-  title: "Agent-Based Query Planning",
-  difficulty: "Advanced",
-  time: "~40 min",
-
-  description:
-    "Uses an autonomous LLM agent to plan, decompose, and execute multi-step query strategies using tools and iterative reasoning.",
-
-  tags: ["query", "agent", "planning", "tool-use", "retrieval"],
-
-  steps: [
-    {
-      label: "Input Query",
-      icon: "⌨️",
-      detail: "User submits a complex query."
-    },
-    {
-      label: "Task Understanding",
-      icon: "🧠",
-      detail: "Agent interprets intent and requirements."
-    },
-    {
-      label: "Plan Generation",
-      icon: "📋",
-      detail: "Break query into actionable steps."
-    },
-    {
-      label: "Tool Execution",
-      icon: "🛠️",
-      detail: "Run retrieval, search, or external tools."
-    },
-    {
-      label: "Iteration Loop",
-      icon: "🔄",
-      detail: "Refine plan based on intermediate results."
-    },
-    {
-      label: "Final Answer",
-      icon: "✨",
-      detail: "Synthesize final response from all outputs."
-    }
-  ],
-
-  code: `
-def agent_based_query_planning(query):
-    plan = agent.create_plan(query)
-
-    results = []
-
-    for step in plan:
-        result = execute_tool(step)
-        results.append(result)
-
-        plan = agent.refine_plan(plan, result)
-
-    return agent.summarize(results)
-`
-},
-{
-  id: "cross-encoder-reranking",
-  category: "Reranking",
-  title: "Cross Encoder Reranking",
-  difficulty: "Advanced",
-  time: "~25 min",
-
-  description:
-    "Re-ranks retrieved documents using a cross-encoder model that jointly encodes query and document for higher relevance accuracy.",
-
-  tags: ["ranking", "reranking", "cross-encoder", "retrieval"],
-
-  steps: [
-    { label: "Initial Retrieval", icon: "🔍", detail: "Fetch top-K candidate documents." },
-    { label: "Pair Encoding", icon: "🔗", detail: "Encode query-document pairs together." },
-    { label: "Score Calculation", icon: "📊", detail: "Compute relevance scores." },
-    { label: "Re-ranking", icon: "🔝", detail: "Sort based on scores." }
-  ],
-
-  code: `
-def cross_encoder_rerank(query, docs):
-    pairs = [(query, doc) for doc in docs]
-
-    scores = cross_encoder.predict(pairs)
-
-    ranked_docs = sort_by_score(docs, scores)
-
-    return ranked_docs
-`
-},
-{
-  id: "cohere-reranker",
-  category: "Reranking",
-  title: "Cohere Reranker",
-  difficulty: "Advanced",
-  time: "~20 min",
-
-  description:
-    "Uses Cohere’s rerank model to improve retrieval relevance by scoring query-document pairs.",
-
-  tags: ["reranking", "cohere", "ranking", "llm"],
-
-  steps: [
-    { label: "Retrieve Candidates", icon: "🔍", detail: "Get top-K documents." },
-    { label: "Send to Cohere", icon: "🌐", detail: "Pass query + docs to reranker API." },
-    { label: "Score Results", icon: "📊", detail: "Receive relevance scores." },
-    { label: "Sort Output", icon: "🔝", detail: "Rank documents." }
-  ],
-
-  code: `
-import cohere
-
-co = cohere.Client("API_KEY")
-
-def cohere_rerank(query, docs):
-    results = co.rerank(
-        model="rerank-english-v3.0",
-        query=query,
-        documents=docs
-    )
-
-    return sorted(results, key=lambda x: x.relevance_score, reverse=True)
-`
-},
-
-{
-  id: "bge-reranker",
-  category: "Reranking",
-  title: "BGE Reranker",
-  difficulty: "Advanced",
-  time: "~20 min",
-
-  description:
-    "Uses BAAI's BGE reranker model to improve semantic ranking of retrieved documents.",
-
-  tags: ["bge", "reranking", "embedding", "retrieval"],
-
-  steps: [
-    { label: "Retrieve Docs", icon: "🔍", detail: "Initial candidate retrieval." },
-    { label: "Encode Pairs", icon: "🔗", detail: "Query-document encoding." },
-    { label: "Score with BGE", icon: "🧠", detail: "Compute semantic relevance." },
-    { label: "Re-rank", icon: "🔝", detail: "Sort by score." }
-  ],
-
-  code: `
-def bge_rerank(query, docs):
-    pairs = [(query, doc) for doc in docs]
-
-    scores = bge_model.score(pairs)
-
-    return sort_by_score(docs, scores)
-`
-},
-{
-  id: "llm-reranking",
-  category: "Reranking",
-  title: "LLM Reranking",
-  difficulty: "Advanced",
-  time: "~30 min",
-
-  description:
-    "Uses a large language model to evaluate and reorder retrieved documents based on semantic understanding.",
-
-  tags: ["llm", "reranking", "ranking", "reasoning"],
-
-  steps: [
-    { label: "Retrieve Candidates", icon: "🔍", detail: "Fetch top-K documents." },
-    { label: "LLM Evaluation", icon: "🧠", detail: "Model evaluates relevance." },
-    { label: "Score Assignment", icon: "📊", detail: "Assign relevance scores." },
-    { label: "Final Ranking", icon: "🔝", detail: "Sort results." }
-  ],
-
-  code: `
-def llm_rerank(query, docs):
-    scored_docs = []
-
-    for doc in docs:
-        score = llm.evaluate_relevance(query, doc)
-        scored_docs.append((doc, score))
-
-    return sorted(scored_docs, key=lambda x: x[1], reverse=True)
-`
-},
-
-  {
-  id: "fixed-chunking",
-  category: "Chunking",
-  title: "Fixed Chunking",
-  difficulty: "Beginner",
-  time: "~10 min",
-  description:
-    "Fixed Chunking divides documents into chunks of a predefined size regardless of semantic boundaries. It is simple, fast, and widely used in basic RAG systems.",
-
-  tags: [
-    "chunking",
-    "fixed-chunking",
-    "document-processing",
-    "rag"
-  ],
-
-  steps: [
-    {
-      label: "Load Document",
-      icon: "📄",
-      detail:
-        "Read the source document."
-    },
-    {
-      label: "Define Chunk Size",
-      icon: "📏",
-      detail:
-        "Choose a fixed size such as 500 tokens."
-    },
-    {
-      label: "Split Text",
-      icon: "✂️",
-      detail:
-        "Break the document into equal-sized chunks."
-    },
-    {
-      label: "Add Overlap",
-      icon: "🔗",
-      detail:
-        "Include overlap between chunks to preserve context."
-    },
-    {
-      label: "Generate Embeddings",
-      icon: "🔢",
-      detail:
-        "Convert chunks into vector embeddings."
-    },
-    {
-      label: "Store Chunks",
-      icon: "🗄️",
-      detail:
-        "Save embeddings and metadata in a vector database."
-    }
-  ],
-
-  code: `function fixedChunk(
-  text,
-  chunkSize = 500,
-  overlap = 50
-) {
-
-  const chunks = [];
-
-  for (
-    let i = 0;
-    i < text.length;
-    i += chunkSize - overlap
-  ) {
-    chunks.push(
-      text.slice(
-        i,
-        i + chunkSize
-      )
-    );
-  }
-
-  return chunks;
-}
-
-const chunks = fixedChunk(
-  document,
-  500,
-  50
-);
-
-console.log(chunks);`
-},
-  
-{
-  id: "naive-rag",
-  category: "Foundations",
-  title: "Naive RAG",
-  difficulty: "Beginner",
-  time: "~15 min",
-  description: "The baseline pattern: embed, store, retrieve, generate. A great starting point before adding complexity.",
-  tags: ["retrieval", "embeddings", "generation"],
-  steps: [
-    { label: "Chunk Documents", icon: "📄", detail: "Split documents into fixed-size or semantic chunks (e.g. 512 tokens with 10% overlap)." },
-    { label: "Embed Chunks", icon: "🔢", detail: "Use a dense embedding model (e.g. text-embedding-3-small) to vectorize each chunk." },
-    { label: "Store in Vector DB", icon: "🗄️", detail: "Upsert (id, vector, metadata) into a vector store like Pinecone, Weaviate, or pgvector." },
-    { label: "Embed Query", icon: "🔍", detail: "At query time, embed the user question using the same model." },
-    { label: "Top-K Retrieval", icon: "🎯", detail: "Cosine similarity search for top-K (K=5) most relevant chunks." },
-    { label: "Prompt + Generate", icon: "✨", detail: "Inject retrieved chunks into prompt as context, then call the LLM to generate an answer." },
-  ],
-  code: `import anthropic from "@anthropic-ai/sdk";
-import { OpenAI } from "openai";
-import { Pinecone } from "@pinecone-database/pinecone";
-
-const openai = new OpenAI();
-const pinecone = new Pinecone();
-const claude = new anthropic.Anthropic();
-const index = pinecone.index("my-rag-index");
-
-// Step 1: Ingest documents
-async function ingest(docs) {
-  for (const doc of docs) {
-    const chunks = chunkText(doc.text, 512);
-    for (const chunk of chunks) {
-      const { data } = await openai.embeddings.create({
-        model: "text-embedding-3-small",
-        input: chunk,
-      });
-      await index.upsert([{
-        id: crypto.randomUUID(),
-        values: data[0].embedding,
-        metadata: { text: chunk, source: doc.source },
-      }]);
-    }
-  }
-}
-
-// Step 2: Query
-async function query(question) {
-  const { data } = await openai.embeddings.create({
-    model: "text-embedding-3-small",
-    input: question,
-  });
-
-  const results = await index.query({
-    vector: data[0].embedding,
-    topK: 5,
-    includeMetadata: true,
-  });
-
-  const context = results.matches
-    .map((m) => m.metadata.text)
-    .join("\\n\\n---\\n\\n");
-
-  const response = await claude.messages.create({
-    model: "claude-opus-4-6",
-    max_tokens: 1024,
-    messages: [{
-      role: "user",
-      content: \`Answer using the context below.\\n\\nContext:\\n\${context}\\n\\nQuestion: \${question}\`,
-    }],
-  });
-
-  return response.content[0].text;
-}`,
-  },
-
-  {
-  id: "semantic-rag",
-  category: "Foundations",
-  title: "Semantic RAG",
-  difficulty: "Beginner",
-  time: "~20 min",
-  description:
-    "Retrieves documents based on semantic similarity rather than keyword matching.",
-
-  tags: ["semantic-search", "embeddings", "retrieval"],
-
-  steps: [
-    { label: "Embed Documents", icon: "📄", detail: "Generate embeddings for document chunks." },
-    { label: "Store Vectors", icon: "🗄️", detail: "Save embeddings in a vector database." },
-    { label: "Embed Query", icon: "🔍", detail: "Convert user question into a vector." },
-    { label: "Semantic Search", icon: "🧠", detail: "Find semantically similar chunks." },
-    { label: "Build Context", icon: "📚", detail: "Combine retrieved chunks." },
-    { label: "Generate Answer", icon: "✨", detail: "Generate grounded response." }
-  ],
-
-  code: `const docs = await vectorStore.similaritySearch(
-  question,
-  5
-);
-
-const answer =
-  await llm.invoke(
-    buildPrompt(docs, question)
-  );`
-},
-{
-  id: "hybrid-rag",
-  category: "Foundations",
-  title: "Hybrid RAG",
-  difficulty: "Intermediate",
-  time: "~25 min",
-  description:
-    "Combines vector search and keyword search for better retrieval accuracy.",
-
-  tags: ["hybrid", "bm25", "vector-search"],
-
-  steps: [
-    { label: "Keyword Search", icon: "🔤", detail: "Perform BM25 search." },
-    { label: "Semantic Search", icon: "🧠", detail: "Perform vector search." },
-    { label: "Merge Results", icon: "🔗", detail: "Combine retrieved results." },
-    { label: "Rerank", icon: "📊", detail: "Sort by relevance." },
-    { label: "Build Context", icon: "📚", detail: "Create final prompt context." },
-    { label: "Generate", icon: "✨", detail: "Generate answer." }
-  ],
-
-  code: `const keywordDocs =
-  await bm25.search(question);
-
-const semanticDocs =
-  await vectorStore.similaritySearch(
-    question,
-    10
-  );
-
-const results =
-  mergeResults(
-    keywordDocs,
-    semanticDocs
-  );`
-},
-{
-  id: "parent-child-rag",
-  category: "Foundations",
-  title: "Parent-Child RAG",
-  difficulty: "Intermediate",
-  time: "~30 min",
-
-  description:
-    "Retrieves small chunks but returns larger parent context.",
-
-  tags: ["parent-child", "hierarchical"],
-
-  steps: [
-    { label: "Create Parents", icon: "📚", detail: "Generate large chunks." },
-    { label: "Create Children", icon: "📄", detail: "Split into smaller chunks." },
-    { label: "Index Children", icon: "🗄️", detail: "Store child embeddings." },
-    { label: "Retrieve Children", icon: "🔍", detail: "Find matching chunks." },
-    { label: "Fetch Parents", icon: "📖", detail: "Retrieve larger context." },
-    { label: "Generate", icon: "✨", detail: "Generate answer." }
-  ],
-
-  code: `const retriever =
-  new ParentDocumentRetriever({
-    vectorstore,
-    docstore,
-  });
-
-const docs =
-  await retriever.invoke(
-    question
-  );`
-},
-{
-  id: "multi-hop-rag",
-  category: "Foundations",
-  title: "Multi-Hop RAG",
-  difficulty: "Advanced",
-  time: "~35 min",
-
-  description:
-    "Retrieves information across multiple retrieval steps and combines evidence.",
-
-  tags: ["multi-hop", "reasoning"],
-
-  steps: [
-    { label: "Analyze Query", icon: "🧠", detail: "Understand information needs." },
-    { label: "Create Subqueries", icon: "❓", detail: "Break into smaller questions." },
-    { label: "Retrieve Evidence", icon: "🔍", detail: "Search each query." },
-    { label: "Combine Facts", icon: "🔗", detail: "Merge evidence." },
-    { label: "Reason", icon: "📚", detail: "Perform multi-hop reasoning." },
-    { label: "Generate", icon: "✨", detail: "Return answer." }
-  ],
-
-  code: `const subQueries =
-  await planner(question);
-
-const evidence =
-  await Promise.all(
-    subQueries.map(
-      q => retriever.invoke(q)
-    )
-  );`
-},
-{
-  id: "graph-rag",
-  category: "Foundations",
-  title: "Graph RAG",
-  difficulty: "Advanced",
-  time: "~45 min",
-
-  description:
-    "Uses knowledge graphs to retrieve entities and relationships.",
-
-  tags: ["graph", "knowledge-graph"],
-
-  steps: [
-    { label: "Extract Entities", icon: "🏷️", detail: "Identify entities." },
-    { label: "Build Graph", icon: "🕸️", detail: "Create relationships." },
-    { label: "Store Graph", icon: "🗄️", detail: "Persist graph data." },
-    { label: "Traverse Graph", icon: "🔍", detail: "Find connected knowledge." },
-    { label: "Build Context", icon: "📚", detail: "Gather graph evidence." },
-    { label: "Generate", icon: "✨", detail: "Answer using graph context." }
-  ],
-
-  code: `const entities =
-  await extractEntities(
-    document
-  );
-
-const graph =
-  await buildKnowledgeGraph(
-    entities
-  );`
-},
-{
-  id: "agentic-rag",
-  category: "Foundations",
-  title: "Agentic RAG",
-  difficulty: "Advanced",
-  time: "~45 min",
-
-  description:
-    "Uses autonomous agents to plan, retrieve, reason, and answer.",
-
-  tags: ["agentic", "agents", "reasoning"],
-
-  steps: [
-    { label: "Plan", icon: "🧠", detail: "Create execution strategy." },
-    { label: "Retrieve", icon: "🔍", detail: "Search knowledge sources." },
-    { label: "Evaluate", icon: "📊", detail: "Assess retrieval quality." },
-    { label: "Refine", icon: "🔄", detail: "Retry if needed." },
-    { label: "Reason", icon: "📚", detail: "Combine evidence." },
-    { label: "Generate", icon: "✨", detail: "Produce final answer." }
-  ],
-
-  code: `const result =
-  await agent.invoke({
-    question
-  });`
-},
-{
-  id: "crag",
-  category: "Advanced",
-  title: "Corrective RAG (CRAG)",
-  difficulty: "Advanced",
-  time: "~40 min",
-
-  description:
-    "Evaluates retrieval quality and corrects poor retrieval results.",
-
-  tags: ["crag", "corrective-rag"],
-
-  steps: [
-    { label: "Retrieve", icon: "🔍", detail: "Retrieve documents." },
-    { label: "Evaluate", icon: "📊", detail: "Check retrieval quality." },
-    { label: "Correct", icon: "🔄", detail: "Perform additional retrieval." },
-    { label: "Filter", icon: "🧹", detail: "Remove noisy chunks." },
-    { label: "Context Build", icon: "📚", detail: "Create final context." },
-    { label: "Generate", icon: "✨", detail: "Generate response." }
-  ],
-
-  code: `if(score < threshold){
-  docs =
-    await webSearch(question);
-}`
-},
-{
-  id: "self-rag",
-  category: "Advanced",
-  title: "Self-RAG",
-  difficulty: "Advanced",
-  time: "~45 min",
-
-  description:
-    "Allows the model to self-reflect on retrieval and generation quality.",
-
-  tags: ["self-rag", "reflection"],
-
-  steps: [
-    { label: "Retrieve", icon: "🔍", detail: "Fetch context." },
-    { label: "Generate", icon: "✨", detail: "Create answer." },
-    { label: "Reflect", icon: "🤔", detail: "Evaluate answer quality." },
-    { label: "Retrieve Again", icon: "🔄", detail: "Get more evidence if needed." },
-    { label: "Improve", icon: "📈", detail: "Refine response." },
-    { label: "Finalize", icon: "✅", detail: "Return answer." }
-  ],
-
-  code: `const reflection =
-  await llm.invoke(
-    evaluateAnswer(answer)
-  );`
-},
-{
-  id: "adaptive-rag",
-  category: "Advanced",
-  title: "Adaptive RAG",
-  difficulty: "Advanced",
-  time: "~45 min",
-
-  description:
-    "Dynamically selects retrieval strategies based on query complexity.",
-
-  tags: ["adaptive", "routing"],
-
-  steps: [
-    { label: "Classify Query", icon: "🏷️", detail: "Analyze complexity." },
-    { label: "Route Strategy", icon: "🚦", detail: "Select retrieval type." },
-    { label: "Retrieve", icon: "🔍", detail: "Perform retrieval." },
-    { label: "Evaluate", icon: "📊", detail: "Assess results." },
-    { label: "Optimize", icon: "⚙️", detail: "Adjust retrieval." },
-    { label: "Generate", icon: "✨", detail: "Answer question." }
-  ],
-
-  code: `const route =
-  await classifier(question);
-
-if(route === "simple"){
-  useNaiveRAG();
-}else{
-  useMultiHopRAG();
-}`
-},
-{
-  id: "multimodal-rag",
-  category: "Advanced",
-  title: "Multimodal RAG",
-  difficulty: "Advanced",
-  time: "~50 min",
-
-  description:
-    "Retrieves and reasons over text, images, audio, and video.",
-
-  tags: ["multimodal", "vision", "audio"],
-
-  steps: [
-    { label: "Ingest Data", icon: "📂", detail: "Load multiple modalities." },
-    { label: "Create Embeddings", icon: "🔢", detail: "Generate multimodal vectors." },
-    { label: "Store Data", icon: "🗄️", detail: "Index content." },
-    { label: "Retrieve", icon: "🔍", detail: "Search across modalities." },
-    { label: "Fuse Context", icon: "🔗", detail: "Combine evidence." },
-    { label: "Generate", icon: "✨", detail: "Produce answer." }
-  ],
-
-  code: `const imageResults =
-  await imageRetriever.search(
-    query
-  );
-
-const textResults =
-  await textRetriever.search(
-    query
-  );`
-},
-{
-  id: "fusion-rag",
-  category: "Advanced",
-  title: "Fusion RAG",
-  difficulty: "Advanced",
-  time: "~45 min",
-
-  description:
-    "Combines multiple retrieval strategies (dense, sparse, semantic) to improve answer accuracy.",
-
-  tags: ["hybrid", "retrieval", "ranking", "fusion"],
-
-  steps: [
-    { label: "Query Input", icon: "🧠", detail: "User submits query." },
-    { label: "Multi-Retrieval", icon: "🔍", detail: "Run BM25, vector, and hybrid search." },
-    { label: "Score Fusion", icon: "⚖️", detail: "Combine results using weighted ranking." },
-    { label: "Deduplication", icon: "🧹", detail: "Remove redundant documents." },
-    { label: "Context Build", icon: "🔗", detail: "Prepare final context window." },
-    { label: "Generate Answer", icon: "✨", detail: "LLM produces final response." }
-  ],
-
-  code: `
-const denseResults = await vectorSearch(query);
-const sparseResults = await keywordSearch(query);
-
-const fused = fuseResults(denseResults, sparseResults, {
-  strategy: "weighted-rerank"
-});
-`
-},
-{
-  id: "enterprise-rag",
-  category: "Production",
-  title: "Enterprise RAG",
-  difficulty: "Advanced",
-  time: "~60 min",
-
-  description:
-    "Scalable RAG system designed for enterprise-grade security, compliance, and multi-source knowledge ingestion.",
-
-  tags: ["enterprise", "security", "scalable", "governance", "llmops"],
-
-  steps: [
-    { label: "Data Sources", icon: "🏢", detail: "Connect databases, APIs, documents." },
-    { label: "Ingestion Pipeline", icon: "📥", detail: "ETL + chunking + cleaning." },
-    { label: "Indexing Layer", icon: "🗄️", detail: "Store embeddings in vector DB." },
-    { label: "Access Control", icon: "🔐", detail: "Role-based data filtering." },
-    { label: "Retrieval Service", icon: "🔍", detail: "Secure context retrieval." },
-    { label: "LLM Orchestration", icon: "🤖", detail: "Prompt + governance layer." },
-    { label: "Monitoring", icon: "📊", detail: "Logging, tracing, evaluation." }
-  ],
-
-  code: `
-const userContext = getUserRole(user);
-
-const docs = await secureRetrieval(query, {
-  filters: { accessLevel: userContext.role }
-});
-
-const response = await llm.generate({
-  context: docs,
-  policy: "enterprise-safe"
-});
-`
-},
-{
-  id: "federated-rag",
-  category: "Advanced",
-  title: "Federated RAG",
-  difficulty: "Advanced",
-  time: "~55 min",
-
-  description:
-    "Retrieves knowledge from multiple distributed nodes without centralizing sensitive data.",
-
-  tags: ["federated", "privacy", "distributed", "edge-ai"],
-
-  steps: [
-    { label: "Local Nodes", icon: "📱", detail: "Each node holds private data." },
-    { label: "Local Retrieval", icon: "🔍", detail: "Search happens at edge." },
-    { label: "Embedding Sync", icon: "🔄", detail: "Share only embeddings, not raw data." },
-    { label: "Aggregation", icon: "🧩", detail: "Combine partial results securely." },
-    { label: "Context Fusion", icon: "🔗", detail: "Merge distributed knowledge." },
-    { label: "Generate Response", icon: "✨", detail: "Final LLM output." }
-  ],
-
-  code: `
-const localResultsA = await nodeA.search(query);
-const localResultsB = await nodeB.search(query);
-
-const merged = secureAggregate([
-  localResultsA,
-  localResultsB
-]);
-
-const answer = await llm.generate({ context: merged });
-`
-},
-
-
-{
-  id: "recursive-chunking",
-  category: "Chunking",
-  title: "Recursive Chunking",
-  difficulty: "Beginner",
-  time: "~15 min",
-  description:
-    "Recursively splits documents using separators such as paragraphs, sentences, and words while preserving document structure.",
-
-  tags: [
-    "chunking",
-    "recursive",
-    "langchain",
-    "rag"
-  ],
-
-  steps: [
-    {
-      label: "Load Document",
-      icon: "📄",
-      detail:
-        "Read the source document."
-    },
-    {
-      label: "Define Separators",
-      icon: "📑",
-      detail:
-        "Use paragraphs, sentences, and spaces."
-    },
-    {
-      label: "Recursive Split",
-      icon: "🔄",
-      detail:
-        "Split progressively until chunk size is reached."
-    },
-    {
-      label: "Apply Overlap",
-      icon: "🔗",
-      detail:
-        "Preserve context between chunks."
-    },
-    {
-      label: "Generate Embeddings",
-      icon: "🔢",
-      detail:
-        "Convert chunks into vectors."
-    },
-    {
-      label: "Store Chunks",
-      icon: "🗄️",
-      detail:
-        "Index chunks in a vector database."
-    }
-  ],
-
-  code: `import {
-  RecursiveCharacterTextSplitter
-} from "langchain/text_splitter";
-
-const splitter =
-  new RecursiveCharacterTextSplitter({
-    chunkSize: 500,
-    chunkOverlap: 50,
-  });
-
-const chunks =
-  await splitter.splitText(document);
-
-console.log(chunks);`
-},
-{
-  id: "hierarchical-chunking",
-  category: "Chunking",
-  title: "Hierarchical Chunking",
-  difficulty: "Intermediate",
-  time: "~20 min",
-  description:
-    "Creates parent and child chunks to support hierarchical retrieval and context expansion.",
-
-  tags: [
-    "hierarchical",
-    "parent-child",
-    "chunking",
-    "rag"
-  ],
-
-  steps: [
-    {
-      label: "Create Parent Chunks",
-      icon: "📚",
-      detail:
-        "Split into larger sections."
-    },
-    {
-      label: "Create Child Chunks",
-      icon: "📄",
-      detail:
-        "Further divide parent sections."
-    },
-    {
-      label: "Generate Embeddings",
-      icon: "🔢",
-      detail:
-        "Embed child chunks."
-    },
-    {
-      label: "Store Relationships",
-      icon: "🔗",
-      detail:
-        "Maintain parent-child mapping."
-    },
-    {
-      label: "Retrieve Child Chunks",
-      icon: "🔍",
-      detail:
-        "Search smaller chunks."
-    },
-    {
-      label: "Return Parent Context",
-      icon: "📖",
-      detail:
-        "Provide larger context window."
-    }
-  ],
-
-  code: `const parentChunks =
-  splitDocument(
-    document,
-    2000
-  );
-
-const childChunks =
-  parentChunks.flatMap(
-    chunk =>
-      splitDocument(
-        chunk,
-        500
-      )
-  );
-
-console.log(childChunks);`
-},
-{
-  id: "sliding-window-chunking",
-  category: "Chunking",
-  title: "Sliding Window Chunking",
-  difficulty: "Intermediate",
-  time: "~15 min",
-  description:
-    "Creates overlapping chunks to preserve context between neighboring chunks.",
-
-  tags: [
-    "sliding-window",
-    "chunking",
-    "overlap",
-    "rag"
-  ],
-
-  steps: [
-    {
-      label: "Define Window Size",
-      icon: "📏",
-      detail:
-        "Choose chunk size."
-    },
-    {
-      label: "Define Overlap",
-      icon: "🔗",
-      detail:
-        "Specify overlap amount."
-    },
-    {
-      label: "Slide Window",
-      icon: "➡️",
-      detail:
-        "Move through document incrementally."
-    },
-    {
-      label: "Generate Chunks",
-      icon: "📄",
-      detail:
-        "Create overlapping chunks."
-    },
-    {
-      label: "Generate Embeddings",
-      icon: "🔢",
-      detail:
-        "Convert chunks to vectors."
-    },
-    {
-      label: "Store Chunks",
-      icon: "🗄️",
-      detail:
-        "Save for retrieval."
-    }
-  ],
-
-  code: `function slidingWindow(
-  text,
-  size,
-  overlap
-) {
-
-  const chunks = [];
-
-  for (
-    let i = 0;
-    i < text.length;
-    i += size - overlap
-  ) {
-    chunks.push(
-      text.slice(
-        i,
-        i + size
-      )
-    );
-  }
-
-  return chunks;
-}`
-},
-{
-  id: "token-based-chunking",
-  category: "Chunking",
-  title: "Token-Based Chunking",
-  difficulty: "Intermediate",
-  time: "~15 min",
-  description:
-    "Splits documents based on token counts to optimize LLM context windows.",
-
-  tags: [
-    "token",
-    "chunking",
-    "llm",
-    "rag"
-  ],
-
-  steps: [
-    {
-      label: "Tokenize Document",
-      icon: "🔤",
-      detail:
-        "Convert text into tokens."
-    },
-    {
-      label: "Define Token Limit",
-      icon: "📏",
-      detail:
-        "Set maximum token count."
-    },
-    {
-      label: "Split Tokens",
-      icon: "✂️",
-      detail:
-        "Create chunks within token limits."
-    },
-    {
-      label: "Apply Overlap",
-      icon: "🔗",
-      detail:
-        "Preserve context."
-    },
-    {
-      label: "Generate Embeddings",
-      icon: "🔢",
-      detail:
-        "Embed chunks."
-    },
-    {
-      label: "Store Chunks",
-      icon: "🗄️",
-      detail:
-        "Save to vector database."
-    }
-  ],
-
-  code: `import {
-  TokenTextSplitter
-} from "langchain/text_splitter";
-
-const splitter =
-  new TokenTextSplitter({
-    chunkSize: 512,
-    chunkOverlap: 50,
-  });
-
-const chunks =
-  await splitter.splitText(
-    document
-  );`
-},
-{
-  id: "agentic-chunking",
-  category: "Chunking",
-  title: "Agentic Chunking",
-  difficulty: "Advanced",
-  time: "~30 min",
-  description:
-    "Uses an LLM or agent to intelligently determine chunk boundaries based on document meaning and structure.",
-
-  tags: [
-    "agentic",
-    "chunking",
-    "llm",
-    "advanced-rag"
-  ],
-
-  steps: [
-    {
-      label: "Analyze Document",
-      icon: "🧠",
-      detail:
-        "Understand document structure."
-    },
-    {
-      label: "Identify Topics",
-      icon: "🏷️",
-      detail:
-        "Detect semantic sections."
-    },
-    {
-      label: "Determine Boundaries",
-      icon: "✂️",
-      detail:
-        "Create meaningful chunk breaks."
-    },
-    {
-      label: "Generate Chunks",
-      icon: "📚",
-      detail:
-        "Produce context-rich chunks."
-    },
-    {
-      label: "Create Embeddings",
-      icon: "🔢",
-      detail:
-        "Embed generated chunks."
-    },
-    {
-      label: "Store in Vector DB",
-      icon: "🗄️",
-      detail:
-        "Index chunks for retrieval."
-    }
-  ],
-
-  code: `const chunks =
-  await llm.invoke(\`
-Analyze the document and
-split it into logical,
-self-contained sections.
-
-Document:
-\${document}
-\`);
-
-console.log(chunks);`
-},
-
-{
-  id: "semantic-chunking",
-  category: "Chunking",
-  title: "Semantic Chunking",
-  difficulty: "Intermediate",
-  time: "~20 min",
-  description:
-    "Creates chunks based on semantic meaning rather than fixed sizes, resulting in more coherent retrieval.",
-
-  tags: [
-    "semantic",
-    "chunking",
-    "embeddings",
-    "rag"
-  ],
-
-  steps: [
-    {
-      label: "Load Document",
-      icon: "📄",
-      detail:
-        "Read source content."
-    },
-    {
-      label: "Generate Embeddings",
-      icon: "🔢",
-      detail:
-        "Create embeddings for sentences."
-    },
-    {
-      label: "Measure Similarity",
-      icon: "📊",
-      detail:
-        "Compare adjacent sentence embeddings."
-    },
-    {
-      label: "Detect Boundaries",
-      icon: "✂️",
-      detail:
-        "Identify topic changes."
-    },
-    {
-      label: "Create Chunks",
-      icon: "📚",
-      detail:
-        "Group semantically related sentences."
-    },
-    {
-      label: "Store Chunks",
-      icon: "🗄️",
-      detail:
-        "Save chunks for retrieval."
-    }
-  ],
-
-  code: `import {
-  SemanticChunker
-} from "langchain_experimental";
-
-const chunker =
-  new SemanticChunker(
-    embeddings
-  );
-
-const chunks =
-  await chunker.createDocuments([
-    document
-  ]);
-
-console.log(chunks);`
-},
-{
-  id: "similarity-search",
-  category: "Retrieval",
-  title: "Similarity Search Retrieval",
-  difficulty: "Beginner",
-  time: "~15 min",
-  description:
-    "The most common retrieval strategy in RAG systems. Query embeddings are compared against document embeddings using vector similarity metrics such as cosine similarity.",
-
-  tags: [
-    "retrieval",
-    "vector-search",
-    "similarity-search",
-    "embeddings"
-  ],
-
-  steps: [
-    {
-      label: "Embed Documents",
-      icon: "📄",
-      detail:
-        "Generate embeddings for document chunks using an embedding model."
-    },
-    {
-      label: "Store Vectors",
-      icon: "🗄️",
-      detail:
-        "Store embeddings in a vector database such as Pinecone, ChromaDB, or FAISS."
-    },
-    {
-      label: "Embed Query",
-      icon: "🔍",
-      detail:
-        "Convert the user query into the same embedding space."
-    },
-    {
-      label: "Calculate Similarity",
-      icon: "📐",
-      detail:
-        "Compare query vectors with document vectors using cosine similarity."
-    },
-    {
-      label: "Retrieve Top-K",
-      icon: "🎯",
-      detail:
-        "Return the most similar document chunks."
-    },
-    {
-      label: "Generate Response",
-      icon: "✨",
-      detail:
-        "Pass retrieved chunks to the LLM for answer generation."
-    }
-  ],
-
-  code: `import { OpenAI } from "openai";
-import { Pinecone } from "@pinecone-database/pinecone";
-
-const openai = new OpenAI();
-const pinecone = new Pinecone();
-
-const index = pinecone.index("documents");
-
-async function retrieve(query) {
-
-  const embedding = await openai.embeddings.create({
-    model: "text-embedding-3-small",
-    input: query,
-  });
-
-  const results = await index.query({
-    vector: embedding.data[0].embedding,
-    topK: 5,
-    includeMetadata: true,
-  });
-
-  return results.matches.map(
-    doc => doc.metadata.text
-  );
-}`
-},
-
-  {
     id: "hybrid-search",
     category: "Retrieval",
     title: "Hybrid Search",
@@ -1788,6 +799,7 @@ async function retrieve(query) {
     "embeddings",
     "retrieval"
   ],
+  concept:SemanticSearchDoc,
 
   steps: [
     {
@@ -1816,22 +828,7 @@ async function retrieve(query) {
     }
   ],
 
-  code: `const results = await vectorStore.similaritySearch(
-  query,
-  5
-);
-
-const context = results
-  .map(doc => doc.pageContent)
-  .join("\\n");
-
-const answer = await llm.invoke(
-  \`Context:
-  \${context}
-
-  Question:
-  \${query}\`
-);`
+  code:SemanticSearchCode
 },
 {
   id: "metadata-filtering",
@@ -1967,119 +964,6 @@ const answer = await llm.invoke(
   code: DenseRetrievalCode
 },
 {
-  id: "multi-query-retrieval",
-  category: "Retrieval",
-  title: "Multi-Query Retrieval",
-  difficulty: "Advanced",
-  time: "~25 min",
-  description:
-    "Generate multiple semantically different versions of a user query and retrieve documents for each query. This improves recall and reduces the chance of missing relevant context.",
-
-  tags: [
-    "multi-query",
-    "retrieval",
-    "query-expansion",
-    "rag"
-  ],
-
-  steps: [
-    {
-      label: "Generate Query Variations",
-      icon: "🧠",
-      detail:
-        "Use an LLM to create multiple reformulations of the user question."
-    },
-    {
-      label: "Embed Queries",
-      icon: "🔢",
-      detail:
-        "Convert each generated query into vector embeddings."
-    },
-    {
-      label: "Retrieve Documents",
-      icon: "🔍",
-      detail:
-        "Perform retrieval independently for each query."
-    },
-    {
-      label: "Merge Results",
-      icon: "🔗",
-      detail:
-        "Combine retrieved documents and remove duplicates."
-    },
-    {
-      label: "Rank Context",
-      icon: "📊",
-      detail:
-        "Sort retrieved documents by relevance score."
-    },
-    {
-      label: "Generate Response",
-      icon: "✨",
-      detail:
-        "Provide the consolidated context to the LLM."
-    }
-  ],
-
-  code: `import { OpenAI } from "openai";
-import { Pinecone } from "@pinecone-database/pinecone";
-
-const openai = new OpenAI();
-const pinecone = new Pinecone();
-const index = pinecone.index("rag-index");
-
-async function generateQueries(question) {
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o",
-    messages: [{
-      role: "user",
-      content: \`
-Generate 4 alternative search queries
-for the following question:
-
-\${question}
-\`
-    }]
-  });
-
-  return response.choices[0].message.content
-    .split("\\n")
-    .filter(Boolean);
-}
-
-async function retrieve(question) {
-
-  const queries = await generateQueries(question);
-
-  const allResults = [];
-
-  for (const query of queries) {
-
-    const embedding = await openai.embeddings.create({
-      model: "text-embedding-3-small",
-      input: query,
-    });
-
-    const results = await index.query({
-      vector: embedding.data[0].embedding,
-      topK: 5,
-      includeMetadata: true,
-    });
-
-    allResults.push(...results.matches);
-  }
-
-  const uniqueDocs = [
-    ...new Map(
-      allResults.map(doc => [doc.id, doc])
-    ).values()
-  ];
-
-  return uniqueDocs;
-}`
-},
-
-{
   id: "parent-child-retrieval",
   category: "Retrieval",
   title: "Parent-Child Retrieval",
@@ -2094,6 +978,7 @@ async function retrieve(question) {
     "context",
     "enterprise-rag"
   ],
+  concept:ParentChildRetrievalDoc,
 
   steps: [
     {
@@ -2134,20 +1019,7 @@ async function retrieve(question) {
     }
   ],
 
-  code: `const retriever =
-  new ParentDocumentRetriever({
-    vectorstore,
-    docstore,
-    childSplitter,
-    parentSplitter,
-  });
-
-const results =
-  await retriever.getRelevantDocuments(
-    "Explain transformer architecture"
-  );
-
-console.log(results);`
+  code: ParentChildRetrievalCode
 },
 {
   id: "contextual-compression",
@@ -2164,6 +1036,7 @@ console.log(results);`
     "rag",
     "cost-optimization"
   ],
+  concept:"",
 
   steps: [
     {
@@ -2198,19 +1071,7 @@ console.log(results);`
     }
   ],
 
-  code: `import { ContextualCompressionRetriever }
-from "langchain/retrievers/contextual_compression";
-
-const retriever =
-  new ContextualCompressionRetriever({
-    baseRetriever,
-    compressor,
-  });
-
-const docs =
-  await retriever.invoke(
-    "Explain vector databases"
-  );`
+  code: "",
 },
 {
   id: "self-query-retrieval",
@@ -2227,6 +1088,7 @@ const docs =
     "retrieval",
     "enterprise-rag"
   ],
+  concept:"",
 
   steps: [
     {
@@ -2267,17 +1129,7 @@ const docs =
     }
   ],
 
-  code: `const retriever =
-  SelfQueryRetriever.fromLLM(
-    llm,
-    vectorStore,
-    metadataInfo
-  );
-
-const docs =
-  await retriever.invoke(
-    "Find finance reports from 2025"
-  );`
+  code: ""
 },
 
 {
@@ -2295,6 +1147,7 @@ const docs =
     "multi-hop",
     "rag"
   ],
+  concept:"",
 
   steps: [
     {
@@ -2335,20 +1188,7 @@ const docs =
     }
   ],
 
-  code: `let context = [];
-
-while(needsMoreContext(context)) {
-
-  const docs =
-    await retriever.invoke(query);
-
-  context.push(...docs);
-
-  query =
-    await generateFollowupQuery(
-      context
-    );
-}`
+  code: ""
 },
 
 {
@@ -2359,6 +1199,7 @@ while(needsMoreContext(context)) {
   time: "~45 min",
   description:
     "Retrieve information using entities and relationships stored in a knowledge graph.",
+  concept:"",
 
   tags: [
     "graph-rag",
@@ -2406,12 +1247,7 @@ while(needsMoreContext(context)) {
     }
   ],
 
-  code: `MATCH (p:Person)-[:WORKS_FOR]->
-(c:Company)
-
-RETURN p,c
-
-LIMIT 10`
+  code:""
 },
 
 {
@@ -2429,6 +1265,7 @@ LIMIT 10`
     "multi-agent",
     "rag"
   ],
+  concept:"",
 
   steps: [
     {
@@ -2469,20 +1306,7 @@ LIMIT 10`
     }
   ],
 
-  code: `const workflow = new StateGraph()
-  .addNode("planner", plannerAgent)
-  .addNode("retriever", retrieverAgent)
-  .addNode("critic", criticAgent)
-  .addNode("answer", answerAgent)
-
-  .addEdge("planner", "retriever")
-  .addEdge("retriever", "critic")
-  .addEdge("critic", "answer");
-
-const result =
-  await workflow.invoke({
-    query: question
-  });`
+  code:""
 },
 
 {
@@ -2500,6 +1324,7 @@ const result =
     "retrieval",
     "enterprise-rag"
   ],
+  concept:"",
 
   steps: [
     {
@@ -2540,18 +1365,9 @@ const result =
     }
   ],
 
-  code: `const retriever =
-  new EnsembleRetriever({
-    retrievers: [
-      bm25Retriever,
-      vectorRetriever
-    ],
-    weights: [0.5, 0.5]
-  });
-
-const docs =
-  await retriever.invoke(query);`
+  code: ""
 },
+
 
 {
   id: "multi-vector-retrieval",
@@ -2568,6 +1384,7 @@ const docs =
     "rag",
     "embeddings"
   ],
+  concept:"",
 
   steps: [
     {
@@ -2608,270 +1425,14 @@ const docs =
     }
   ],
 
-  code: `const retriever =
-  new MultiVectorRetriever({
-    vectorstore,
-    byteStore,
-    idKey: "doc_id",
-  });
-
-const docs =
-  await retriever.invoke(
-    "How does GraphRAG work?"
-  );`
+  code:""
 },
 
-  {
-    id: "hyde",
-    category: "Query",
-    title: "HyDE",
-    difficulty: "Intermediate",
-    time: "~20 min",
-    description: "Hypothetical Document Embedding: generate a fake answer first, embed it, then retrieve. Closes the query-document gap.",
-    tags: ["query expansion", "embeddings", "hallucination"],
-    steps: [
-      { label: "Receive Query", icon: "💬", detail: "Receive the original user question." },
-      { label: "Generate Hypothesis", icon: "🤔", detail: "Ask the LLM to write a hypothetical document that would answer the question." },
-      { label: "Embed Hypothesis", icon: "🔢", detail: "Embed the hypothetical document (not the original query)." },
-      { label: "Retrieve by Hypothesis", icon: "🎯", detail: "Use the hypothesis vector for retrieval — it's semantically richer than a short query." },
-      { label: "Generate Final Answer", icon: "✨", detail: "Feed real retrieved chunks into the LLM to produce the grounded final answer." },
-    ],
-    code: `async function hydeQuery(question, vectorIndex) {
-  // Step 1: Generate a hypothetical document
-  const hypothesisResponse = await claude.messages.create({
-    model: "claude-opus-4-6",
-    max_tokens: 512,
-    messages: [{
-      role: "user",
-      content: \`Write a detailed paragraph that directly answers: "\${question}".
-Be specific and factual. This is a hypothetical document for search.\`,
-    }],
-  });
-  const hypothesis = hypothesisResponse.content[0].text;
-
-  // Step 2: Embed the hypothesis
-  const { data } = await openai.embeddings.create({
-    model: "text-embedding-3-small",
-    input: hypothesis,
-  });
-
-  // Step 3: Retrieve using hypothesis embedding
-  const results = await vectorIndex.query({
-    vector: data[0].embedding,
-    topK: 5,
-    includeMetadata: true,
-  });
-
-  const context = results.matches
-    .map((m) => m.metadata.text)
-    .join("\\n---\\n");
-
-  // Step 4: Generate grounded answer
-  const finalResponse = await claude.messages.create({
-    model: "claude-opus-4-6",
-    max_tokens: 1024,
-    messages: [{
-      role: "user",
-      content: \`Context:\\n\${context}\\n\\nQuestion: \${question}\\nProvide a grounded answer using only the context.\`,
-    }],
-  });
-
-  return finalResponse.content[0].text;
-}`,
-  },
-  {
-    id: "corrective-rag",
-    category: "Advanced",
-    title: "Corrective RAG (CRAG)",
-    difficulty: "Advanced",
-    time: "~45 min",
-    description: "Evaluate retrieved documents for relevance before generation. Fall back to web search if local retrieval is insufficient.",
-    tags: ["self-correction", "web search", "evaluation"],
-    steps: [
-      { label: "Initial Retrieval", icon: "🔍", detail: "Retrieve top-K documents from local vector store." },
-      { label: "Relevance Grading", icon: "⚖️", detail: "Use LLM-as-judge to score each chunk: relevant / ambiguous / irrelevant." },
-      { label: "Branch Decision", icon: "🔀", detail: "If all chunks score < threshold → trigger web search. Mixed → use both." },
-      { label: "Web Search Fallback", icon: "🌐", detail: "Run a targeted web search query derived from the original question." },
-      { label: "Knowledge Refinement", icon: "✂️", detail: "Strip irrelevant sentences from ambiguous chunks, keep only relevant sub-passages." },
-      { label: "Generate", icon: "✨", detail: "Generate final answer from curated, high-signal context." },
-    ],
-    code: `async function gradeDocs(question, docs) {
-  const grades = await Promise.all(docs.map(async (doc) => {
-    const res = await claude.messages.create({
-      model: "claude-opus-4-6",
-      max_tokens: 50,
-      messages: [{
-        role: "user",
-        content: \`Is this document relevant to answering: "\${question}"?
-Document: \${doc.text}
-Reply with exactly one word: relevant, ambiguous, or irrelevant.\`,
-      }],
-    });
-    return { doc, grade: res.content[0].text.trim().toLowerCase() };
-  }));
-  return grades;
-}
-
-async function correctiveRag(question, vectorIndex, webSearch) {
-  const results = await vectorIndex.query({ vector: await embed(question), topK: 5, includeMetadata: true });
-  const docs = results.matches.map((m) => ({ id: m.id, text: m.metadata.text }));
-
-  const graded = await gradeDocs(question, docs);
-  const relevant = graded.filter((g) => g.grade === "relevant").map((g) => g.doc);
-  const ambiguous = graded.filter((g) => g.grade === "ambiguous").map((g) => g.doc);
-  const allIrrelevant = relevant.length === 0;
-
-  let context = relevant.map((d) => d.text);
-
-  // Web search fallback
-  if (allIrrelevant || ambiguous.length > 0) {
-    const webResults = await webSearch(question);
-    context = [...context, ...webResults];
-  }
-
-  return generateAnswer(question, context.join("\\n---\\n"));
-}`,
-  },
-  {
-    id: "rag-fusion",
-    category: "Query",
-    title: "RAG Fusion",
-    difficulty: "Intermediate",
-    time: "~25 min",
-    description: "Generate multiple query variations with an LLM, retrieve for each, then fuse results. Handles ambiguous or under-specified queries.",
-    tags: ["query expansion", "multi-query", "fusion"],
-    steps: [
-      { label: "Generate Sub-Queries", icon: "🧠", detail: "Ask the LLM to produce 4 semantically different rephrasings of the original query." },
-      { label: "Parallel Retrieval", icon: "⚡", detail: "Run vector search for each sub-query simultaneously via Promise.all." },
-      { label: "RRF Fusion", icon: "🔀", detail: "Merge all per-query result lists using Reciprocal Rank Fusion." },
-      { label: "Deduplicate", icon: "🧹", detail: "Remove duplicate chunks that appeared in multiple per-query results." },
-      { label: "Generate", icon: "✨", detail: "Use the diverse, fused context to answer the original question." },
-    ],
-    code: `async function generateSubQueries(question) {
-  const res = await claude.messages.create({
-    model: "claude-opus-4-6",
-    max_tokens: 300,
-    messages: [{
-      role: "user",
-      content: \`Generate 4 different search queries to retrieve relevant documents for:
-"\${question}"
-Return only a JSON array of strings. No explanation.\`,
-    }],
-  });
-  return JSON.parse(res.content[0].text);
-}
-
-async function ragFusion(question, vectorIndex) {
-  const subQueries = await generateSubQueries(question);
-  const allQueries = [question, ...subQueries];
-
-  // Parallel retrieval for each query variant
-  const allResults = await Promise.all(
-    allQueries.map(async (q) => {
-      const emb = await embed(q);
-      const hits = await vectorIndex.query({ vector: emb, topK: 10, includeMetadata: true });
-      return hits.matches.map((m) => m.id);
-    })
-  );
-
-  // RRF fusion across all query results
-  const scores = new Map();
-  allResults.forEach((ranks) => {
-    ranks.forEach((id, i) => {
-      scores.set(id, (scores.get(id) || 0) + 1 / (60 + i + 1));
-    });
-  });
-
-  const topIds = [...scores.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
-    .map(([id]) => id);
-
-  const context = await fetchByIds(topIds, vectorIndex);
-  return generateAnswer(question, context);
-}`,
-  },
-  {
-    id: "self-rag",
-    category: "Advanced",
-    title: "Self-RAG",
-    difficulty: "Advanced",
-    time: "~60 min",
-    description: "The model decides whether to retrieve at all, evaluates retrieved passages, and critiques its own output using special reflection tokens.",
-    tags: ["agentic", "self-reflection", "adaptive"],
-    steps: [
-      { label: "Retrieve? Token", icon: "❓", detail: "LLM generates a [Retrieve] vs [No Retrieve] token — retrieval only happens when needed." },
-      { label: "Conditional Retrieval", icon: "🔍", detail: "If [Retrieve]: embed query and fetch top-K passages." },
-      { label: "ISREL Grading", icon: "✅", detail: "For each passage, generate [Relevant] / [Irrelevant] to filter noise." },
-      { label: "Generate with ISSUP", icon: "📝", detail: "Generate answer segment-by-segment; each segment gets [Fully Supported] / [Partial] / [No Support]." },
-      { label: "ISUSE Scoring", icon: "⭐", detail: "Rate overall answer utility on a 1–5 scale; re-generate low-scoring segments." },
-    ],
-    code: `// Self-RAG uses special tokens as structured outputs
-const TOKENS = {
-  RETRIEVE: "[Retrieve]",
-  NO_RETRIEVE: "[No Retrieve]",
-  RELEVANT: "[Relevant]",
-  IRRELEVANT: "[Irrelevant]",
-  FULLY_SUPPORTED: "[Fully Supported]",
-  PARTIAL: "[Partially Supported]",
-  NO_SUPPORT: "[No Support]",
-};
-
-async function selfRag(question, vectorIndex) {
-  // Step 1: Should we retrieve?
-  const retrieveDecision = await claude.messages.create({
-    model: "claude-opus-4-6",
-    max_tokens: 20,
-    messages: [{
-      role: "user",
-      content: \`Do you need to retrieve documents to answer: "\${question}"?
-Reply with exactly: [Retrieve] or [No Retrieve]\`,
-    }],
-  });
-
-  if (retrieveDecision.content[0].text.includes(TOKENS.NO_RETRIEVE)) {
-    return generateAnswer(question, "");
-  }
-
-  // Step 2: Retrieve and grade relevance
-  const docs = await retrieve(question, vectorIndex);
-  const gradedDocs = await Promise.all(docs.map(async (doc) => {
-    const grade = await claude.messages.create({
-      model: "claude-opus-4-6",
-      max_tokens: 20,
-      messages: [{
-        role: "user",
-        content: \`Is this relevant to "\${question}"? Doc: \${doc.text}
-Reply: [Relevant] or [Irrelevant]\`,
-      }],
-    });
-    return { ...doc, relevant: grade.content[0].text.includes(TOKENS.RELEVANT) };
-  }));
-
-  const relevant = gradedDocs.filter((d) => d.relevant);
-
-  // Step 3: Generate with support scoring
-  const generations = await Promise.all(relevant.map(async (doc) => {
-    const gen = await claude.messages.create({
-      model: "claude-opus-4-6",
-      max_tokens: 256,
-      messages: [{
-        role: "user",
-        content: \`Context: \${doc.text}\\nQuestion: \${question}\\nAnswer, then rate support as [Fully Supported], [Partially Supported], or [No Support].\`,
-      }],
-    });
-    const text = gen.content[0].text;
-    const score = text.includes(TOKENS.FULLY_SUPPORTED) ? 3
-      : text.includes(TOKENS.PARTIAL) ? 2 : 1;
-    return { text, score };
-  }));
-
-  return generations.sort((a, b) => b.score - a.score)[0].text;
-}`,
-  },
+  
+  
 ];
 
-const CATEGORIES = ["All", "Foundations","Chunking", "Retrieval", "Query", "Advanced"];
+const CATEGORIES = ["All", "Foundations","Chunking","Embeddings", "Retrieval", "Query", "Advanced"];
 const DIFFICULTIES = { Beginner: "#0F6E56", Intermediate: "#185FA5", Advanced: "#993C1D" };
 const DIFFICULTY_BG = { Beginner: "#E1F5EE", Intermediate: "#E6F1FB", Advanced: "#FAECE7" };
 

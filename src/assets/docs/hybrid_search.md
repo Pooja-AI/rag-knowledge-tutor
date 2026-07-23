@@ -1,5 +1,3 @@
-# Hybrid Search in RAG (Retrieval-Augmented Generation)
-
 ## 1. Introduction
 
 The previous two techniques in this series covered two fundamentally different retrieval philosophies:

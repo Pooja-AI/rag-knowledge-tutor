@@ -1,7 +1,4 @@
-# RAG Foundations
-
-## What is RAG?
-
+## Introduction
 Retrieval-Augmented Generation (RAG) is an AI framework that combines information retrieval with large language model generation. Instead of relying solely on the model's parametric memory, RAG fetches relevant documents at query time and injects them as context.
 
 ## Core Components
